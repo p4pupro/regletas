@@ -1,5 +1,5 @@
 import { LevelDef } from './types';
-import { createRodEl, getRod, ROD_UNIT } from '../rods';
+import { createRodEl, getRod, ROD_UNITS } from '../rods';
 import { playSuccess, playError } from '../audio';
 import {
   showConfetti, shakeEl, popEl, createScoreBar, shuffle,
@@ -71,7 +71,7 @@ export const subtractionLevel: LevelDef = {
 
       const gap = document.createElement('div');
       gap.className = 'gap-placeholder';
-      gap.style.width = `${diffVal * ROD_UNIT}px`;
+      gap.style.width = `${diffVal * ROD_UNITS.lg}px`;
       gap.textContent = '?';
       row.appendChild(gap);
 
@@ -90,7 +90,7 @@ export const subtractionLevel: LevelDef = {
       const options = shuffle([diffVal, ...wrongValues]);
       options.forEach((val) => {
         const rod = getRod(val);
-        const el = createRodEl(rod, { showLabel: true, draggable: false, size: 'md' });
+        const el = createRodEl(rod, { showLabel: true, draggable: false, size: 'lg' });
         el.style.cursor = 'pointer';
 
         el.onclick = () => {

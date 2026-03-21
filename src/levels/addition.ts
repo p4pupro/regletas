@@ -71,14 +71,14 @@ export const additionLevel: LevelDef = {
 
       allOptions.forEach((val) => {
         const rod = getRod(val);
-        const el = createRodEl(rod, { showLabel: true, draggable: false, size: 'md' });
+        const el = createRodEl(rod, { showLabel: true, draggable: false, size: 'lg' });
         el.style.cursor = 'pointer';
 
         el.onclick = () => {
           if (picked.length >= 2) return;
           picked.push(val);
 
-          const clone = createRodEl(rod, { showLabel: true, draggable: false, size: 'md' });
+          const clone = createRodEl(rod, { showLabel: true, draggable: false, size: 'lg' });
           answerRow.appendChild(clone);
           popEl(clone);
           el.style.opacity = '0.3';

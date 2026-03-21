@@ -19,6 +19,7 @@ export const RODS: RodData[] = [
 ];
 
 export const ROD_UNIT = 40;
+export const ROD_UNITS = { sm: 30, md: 40, lg: 50 } as const;
 
 export function getRod(value: number): RodData {
   return RODS[value - 1];
