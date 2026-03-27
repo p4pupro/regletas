@@ -1,6 +1,6 @@
 import { LevelDef } from './types';
-import { createRodEl, getRod } from '../rods';
-import { playSuccess, playError, playDrop } from '../audio';
+import { createRodEl, getRod, ROD_UNITS, responsiveSize } from '../rods';
+import { playSuccess, playError } from '../audio';
 import {
   showConfetti, shakeEl, popEl, createScoreBar, shuffle,
   saveProgress, randInt,
@@ -12,7 +12,7 @@ export const additionLevel: LevelDef = {
   id: 4,
   name: 'Sumar',
   icon: '\u2795',
-  ages: '4-5 a\u00f1os',
+  ages: '4-5 años',
   create(container, onComplete) {
     let round = 0;
     let score = 0;
@@ -47,81 +47,80 @@ export const additionLevel: LevelDef = {
       targetArea.innerHTML = '';
       tray.innerHTML = '';
 
-      const maxTarget = round < 3 ? 5 : 10;
-      const targetVal = randInt(3, maxTarget);
-      const a = randInt(1, targetVal - 1);
-      const b = targetVal - a;
+      const maxBig = round < 3 ? 6 : 10;
+      const bigVal = randInt(3, maxBig);
+      const smallVal = randInt(1, bigVal - 1);
+      const diffVal = bigVal - smallVal;
 
-      prompt.textContent = `\u00bfQu\u00e9 dos regletas juntas forman la ${getRod(targetVal).name}?`;
+      prompt.textContent = '¿Qué regleta completa el hueco?';
 
-      const targetEl = createRodEl(getRod(targetVal), {
-        showLabel: true, draggable: false, size: 'lg',
+      const bigRod = createRodEl(getRod(bigVal), {
+        showLabel: true, draggable: false, size: responsiveSize(),
       });
-      targetArea.appendChild(targetEl);
-      popEl(targetEl);
+      targetArea.appendChild(bigRod);
+      popEl(bigRod);
 
-      const answerRow = document.createElement('div');
-      answerRow.className = 'answer-row';
-      targetArea.appendChild(answerRow);
+      const row = document.createElement('div');
+      row.className = 'answer-row';
+      targetArea.appendChild(row);
 
-      const picked: number[] = [];
-
-      const wrongOptions = generateWrongPairs(a, b, targetVal, maxTarget);
-      const allOptions = shuffle([a, b, ...wrongOptions]);
-
-      allOptions.forEach((val) => {
-        const rod = getRod(val);
-        const el = createRodEl(rod, { showLabel: true, draggable: false, size: 'lg' });
-        el.style.cursor = 'pointer';
-
-        el.onclick = () => {
-          if (picked.length >= 2) return;
-          picked.push(val);
-
-          const clone = createRodEl(rod, { showLabel: true, draggable: false, size: 'lg' });
-          answerRow.appendChild(clone);
-          popEl(clone);
-          el.style.opacity = '0.3';
-          el.style.pointerEvents = 'none';
-
-          playDrop();
-
-          if (picked.length === 2) {
-            const sum = picked[0] + picked[1];
-            setTimeout(() => {
-              if (sum === targetVal) {
-                score++;
-                scoreBar.markCorrect(round);
-                playSuccess();
-                if (round === TOTAL_ROUNDS - 1) showConfetti();
-              } else {
-                scoreBar.markWrong(round);
-                playError();
-                shakeEl(answerRow);
-              }
-              round++;
-              setTimeout(nextRound, 700);
-            }, 400);
-          }
-        };
-
-        tray.appendChild(el);
+      const smallRod = createRodEl(getRod(smallVal), {
+        showLabel: true, draggable: false, size: responsiveSize(),
       });
-    }
+      row.appendChild(smallRod);
 
-    function generateWrongPairs(a: number, b: number, _target: number, max: number): number[] {
-      const wrong: number[] = [];
-      const used = new Set([a, b]);
+      const gap = document.createElement('div');
+      gap.className = 'gap-placeholder';
+      gap.style.width = `${diffVal * ROD_UNITS[responsiveSize()]}px`;
+      gap.textContent = '?';
+      row.appendChild(gap);
+
+      const wrongValues: number[] = [];
+      const used = new Set([diffVal]);
       let attempts = 0;
-      while (wrong.length < 2 && attempts < 20) {
-        const v = randInt(1, max);
+      while (wrongValues.length < 2 && attempts < 20) {
+        const v = randInt(1, Math.min(maxBig, 10));
         if (!used.has(v)) {
-          wrong.push(v);
+          wrongValues.push(v);
           used.add(v);
         }
         attempts++;
       }
-      return wrong;
+
+      const options = shuffle([diffVal, ...wrongValues]);
+      options.forEach((val) => {
+        const rod = getRod(val);
+        const el = createRodEl(rod, { showLabel: true, draggable: false, size: responsiveSize() });
+        el.style.cursor = 'pointer';
+
+        el.onclick = () => {
+          if (val === diffVal) {
+            score++;
+            scoreBar.markCorrect(round);
+            playSuccess();
+
+            gap.innerHTML = '';
+            const correct = createRodEl(getRod(diffVal), {
+              showLabel: true, draggable: false, size: responsiveSize(),
+            });
+            gap.style.border = 'none';
+            gap.style.padding = '0';
+            gap.appendChild(correct);
+            popEl(correct);
+
+            if (round === TOTAL_ROUNDS - 1) showConfetti();
+          } else {
+            scoreBar.markWrong(round);
+            playError();
+            shakeEl(el);
+          }
+
+          round++;
+          setTimeout(nextRound, 800);
+        };
+
+        tray.appendChild(el);
+      });
     }
 
     function showEnd() {
@@ -136,7 +135,7 @@ export const additionLevel: LevelDef = {
         <span style="font-size:3rem">${emoji}</span>
         <h2>${score} de ${TOTAL_ROUNDS}</h2>
         <p style="color:var(--text-light)">
-          ${score >= 4 ? '\u00a1Eres un crack sumando!' : '\u00a1Sigue practicando!'}
+          ${score >= 4 ? '¡Eres un crack sumando!' : '¡Sigue practicando!'}
         </p>
       `;
       const btn = document.createElement('button');

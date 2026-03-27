@@ -180,14 +180,19 @@ html, body {
 
 .rod-tray {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   padding: 12px 16px;
-  overflow-x: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   background: #fff;
-  border-top: 1px solid #eee;
-  flex-shrink: 0;
+  border-top: none;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.06),
+              inset 0 6px 8px -6px rgba(0,0,0,0.08);
   align-items: center;
-  min-height: 72px;
+  justify-content: center;
+  min-height: 80px;
+  max-height: 35vh;
 }
 
 .rod-tray .rod {
@@ -381,7 +386,46 @@ html, body {
   font-weight: 700;
 }
 
+/* ---------- Subtraction equation ---------- */
+.equation-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+}
+
+.op-symbol {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1;
+}
+
 /* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .rod-tray {
+    max-height: 40vh;
+    padding: 10px 12px;
+    gap: 6px;
+  }
+  .game-prompt {
+    font-size: 1rem;
+    padding: 8px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .rod-tray {
+    max-height: 45vh;
+    padding: 8px 10px;
+    gap: 5px;
+  }
+  .target-area, .order-slots {
+    padding: 8px;
+  }
+}
+
 @media (max-width: 380px) {
   .home h1 { font-size: 1.5rem; }
   .level-grid { gap: 10px; }

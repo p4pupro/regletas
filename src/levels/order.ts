@@ -1,5 +1,5 @@
 import { LevelDef } from './types';
-import { createRodEl, getRod, ROD_UNIT } from '../rods';
+import { createRodEl, getRod, ROD_UNITS, responsiveSize } from '../rods';
 import { playSuccess, playError, playDrop } from '../audio';
 import {
   showConfetti, shakeEl, popEl, shuffle, saveProgress, randInt,
@@ -33,7 +33,7 @@ export const orderLevel: LevelDef = {
     values.forEach((v, i) => {
       const slot = document.createElement('div');
       slot.className = 'order-slot';
-      slot.style.width = `${v * ROD_UNIT + 16}px`;
+      slot.style.width = `${v * ROD_UNITS[responsiveSize()] + 16}px`;
       slot.dataset.index = String(i);
       slots.push(slot);
       placed.push(null);
@@ -47,7 +47,7 @@ export const orderLevel: LevelDef = {
     const shuffled = shuffle(values);
     shuffled.forEach((val) => {
       const rod = getRod(val);
-      const el = createRodEl(rod, { showLabel: true, draggable: false, size: 'md' });
+      const el = createRodEl(rod, { showLabel: true, draggable: false, size: responsiveSize() });
       el.style.cursor = 'pointer';
       el.dataset.rodValue = String(val);
       el.onclick = () => tryPlace(val, el);
@@ -63,7 +63,7 @@ export const orderLevel: LevelDef = {
         playDrop();
 
         const rodData = getRod(value);
-        const rodEl = createRodEl(rodData, { showLabel: true, draggable: false, size: 'md' });
+        const rodEl = createRodEl(rodData, { showLabel: true, draggable: false, size: responsiveSize() });
         popEl(rodEl);
 
         slots[nextSlot].innerHTML = '';

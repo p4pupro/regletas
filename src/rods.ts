@@ -25,6 +25,12 @@ export function getRod(value: number): RodData {
   return RODS[value - 1];
 }
 
+export function responsiveSize(): 'sm' | 'md' | 'lg' {
+  if (window.innerWidth <= 380) return 'sm';
+  if (window.innerWidth <= 768) return 'md';
+  return 'lg';
+}
+
 function needsBorder(value: number): boolean {
   return value === 1;
 }

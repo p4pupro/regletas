@@ -1,5 +1,5 @@
 import { LevelDef } from './types';
-import { createRodEl, getRod, ROD_UNITS } from '../rods';
+import { createRodEl, getRod, ROD_UNITS, responsiveSize } from '../rods';
 import { playSuccess, playError } from '../audio';
 import {
   showConfetti, shakeEl, popEl, createScoreBar, shuffle,
@@ -12,7 +12,7 @@ export const subtractionLevel: LevelDef = {
   id: 5,
   name: 'Restar',
   icon: '\u2796',
-  ages: '5-6 a\u00f1os',
+  ages: '5-6 años',
   create(container, onComplete) {
     let round = 0;
     let score = 0;
@@ -50,33 +50,43 @@ export const subtractionLevel: LevelDef = {
       const maxBig = round < 3 ? 6 : 10;
       const bigVal = randInt(3, maxBig);
       const smallVal = randInt(1, bigVal - 1);
-      const diffVal = bigVal - smallVal;
+      const answerVal = bigVal - smallVal;
 
-      prompt.textContent = `\u00bfQu\u00e9 regleta completa el hueco?`;
+      prompt.textContent = '¿Qué regleta se quita?';
+
+      const equation = document.createElement('div');
+      equation.className = 'equation-col';
+      targetArea.appendChild(equation);
 
       const bigRod = createRodEl(getRod(bigVal), {
-        showLabel: true, draggable: false, size: 'lg',
+        showLabel: true, draggable: false, size: responsiveSize(),
       });
-      targetArea.appendChild(bigRod);
+      equation.appendChild(bigRod);
       popEl(bigRod);
 
-      const row = document.createElement('div');
-      row.className = 'answer-row';
-      targetArea.appendChild(row);
-
-      const smallRod = createRodEl(getRod(smallVal), {
-        showLabel: true, draggable: false, size: 'lg',
-      });
-      row.appendChild(smallRod);
+      const minus = document.createElement('div');
+      minus.className = 'op-symbol';
+      minus.textContent = '➖';
+      equation.appendChild(minus);
 
       const gap = document.createElement('div');
       gap.className = 'gap-placeholder';
-      gap.style.width = `${diffVal * ROD_UNITS.lg}px`;
+      gap.style.width = `${answerVal * ROD_UNITS[responsiveSize()]}px`;
       gap.textContent = '?';
-      row.appendChild(gap);
+      equation.appendChild(gap);
+
+      const equals = document.createElement('div');
+      equals.className = 'op-symbol';
+      equals.textContent = '=';
+      equation.appendChild(equals);
+
+      const resultRod = createRodEl(getRod(smallVal), {
+        showLabel: true, draggable: false, size: responsiveSize(),
+      });
+      equation.appendChild(resultRod);
 
       const wrongValues: number[] = [];
-      const used = new Set([diffVal]);
+      const used = new Set([answerVal]);
       let attempts = 0;
       while (wrongValues.length < 2 && attempts < 20) {
         const v = randInt(1, Math.min(maxBig, 10));
@@ -87,21 +97,21 @@ export const subtractionLevel: LevelDef = {
         attempts++;
       }
 
-      const options = shuffle([diffVal, ...wrongValues]);
+      const options = shuffle([answerVal, ...wrongValues]);
       options.forEach((val) => {
         const rod = getRod(val);
-        const el = createRodEl(rod, { showLabel: true, draggable: false, size: 'lg' });
+        const el = createRodEl(rod, { showLabel: true, draggable: false, size: responsiveSize() });
         el.style.cursor = 'pointer';
 
         el.onclick = () => {
-          if (val === diffVal) {
+          if (val === answerVal) {
             score++;
             scoreBar.markCorrect(round);
             playSuccess();
 
             gap.innerHTML = '';
-            const correct = createRodEl(getRod(diffVal), {
-              showLabel: true, draggable: false, size: 'lg',
+            const correct = createRodEl(getRod(answerVal), {
+              showLabel: true, draggable: false, size: responsiveSize(),
             });
             gap.style.border = 'none';
             gap.style.padding = '0';
@@ -135,7 +145,7 @@ export const subtractionLevel: LevelDef = {
         <span style="font-size:3rem">${emoji}</span>
         <h2>${score} de ${TOTAL_ROUNDS}</h2>
         <p style="color:var(--text-light)">
-          ${score >= 4 ? '\u00a1La resta es tu fuerte!' : '\u00a1Sigue intentando!'}
+          ${score >= 4 ? '¡La resta es tu fuerte!' : '¡Sigue intentando!'}
         </p>
       `;
       const btn = document.createElement('button');

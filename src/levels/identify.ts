@@ -1,5 +1,5 @@
 import { LevelDef } from './types';
-import { createRodEl, getRod } from '../rods';
+import { createRodEl, getRod, responsiveSize } from '../rods';
 import { playSuccess, playError } from '../audio';
 import {
   showConfetti, shakeEl, popEl, createScoreBar, shuffle,
@@ -57,7 +57,7 @@ export const identifyLevel: LevelDef = {
       if (isColorMode) {
         prompt.textContent = `\u00bfCu\u00e1l regleta es el ${target.value}?`;
       } else {
-        const ref = createRodEl(target, { showLabel: false, draggable: false, size: 'lg' });
+        const ref = createRodEl(target, { showLabel: false, draggable: false, size: responsiveSize() });
         refArea.appendChild(ref);
         popEl(ref);
         prompt.textContent = '\u00bfQu\u00e9 n\u00famero es esta regleta?';
@@ -75,7 +75,7 @@ export const identifyLevel: LevelDef = {
         const rod = getRod(val);
 
         if (isColorMode) {
-          const btn = createRodEl(rod, { showLabel: true, draggable: false, size: 'lg' });
+          const btn = createRodEl(rod, { showLabel: true, draggable: false, size: responsiveSize() });
           btn.style.cursor = 'pointer';
           btn.onclick = () => handleAnswer(val === targetVal, btn);
           optionsArea.appendChild(btn);
